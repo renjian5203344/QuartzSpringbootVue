@@ -2,6 +2,7 @@ package com.yizhan.trigger;
 
 
 
+import com.yizhan.listener.SchedulerListener;
 import com.yizhan.listener.SimpleJobListener;
 import com.yizhan.listener.SimpleTriggerListener;
 import org.quartz.*;
@@ -39,6 +40,8 @@ public class SimpleTriggerMain {
         //4.创建并注册一个局部的Trigger Listener
          scheduler.getListenerManager().addTriggerListener(new SimpleTriggerListener("SimpleTrigger"), KeyMatcher.keyEquals(TriggerKey.triggerKey("trigger1", "group1")));
 
+        // 创建SchedulerListener
+          scheduler.getListenerManager().addSchedulerListener(new SchedulerListener());
 
         // 添加到调度器中
         scheduler.scheduleJob(job,trigger);
