@@ -20,4 +20,21 @@ public class QuartzTaskController {
         repository.save(quartz);
 
     }
+
+
+    @RequestMapping(value ="deletejob", method = RequestMethod.POST)
+    public void deletejob(@RequestParam(value = "id") Long id){
+        Quartz quartz = new Quartz();
+        quartz.setId(id);
+        repository.delete(quartz);
+
+    }
+
+    @RequestMapping(value ="updatejob", method = RequestMethod.POST)
+    public void updatejob(@RequestBody Quartz quartz){
+        repository.delete(quartz);
+        repository.save(quartz);
+
+
+    }
 }
