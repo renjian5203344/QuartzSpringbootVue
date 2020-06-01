@@ -12,6 +12,7 @@
     <modules>
         <module>QuartzSpringboot</module>
         <module>springbootTest</module>
+        <module>JavaTask</module>
     </modules>
 
 

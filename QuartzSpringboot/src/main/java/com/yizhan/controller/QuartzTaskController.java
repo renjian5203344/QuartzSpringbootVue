@@ -1,6 +1,6 @@
 package com.yizhan.controller;
 
-import com.yizhan.dataobject.Quartz;
+import com.yizhan.dataobject.QuartzEntity;
 import com.yizhan.repository.QuartzTaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,7 @@ public class QuartzTaskController {
 
 
     @RequestMapping(value ="createjob", method = RequestMethod.POST)
-    public void createjob(@RequestBody Quartz quartz){
+    public void createjob(@RequestBody QuartzEntity quartz){
         repository.save(quartz);
 
     }
@@ -24,14 +24,14 @@ public class QuartzTaskController {
 
     @RequestMapping(value ="deletejob", method = RequestMethod.POST)
     public void deletejob(@RequestParam(value = "id") Long id){
-        Quartz quartz = new Quartz();
+        QuartzEntity quartz = new QuartzEntity();
         quartz.setId(id);
         repository.delete(quartz);
 
     }
 
     @RequestMapping(value ="updatejob", method = RequestMethod.POST)
-    public void updatejob(@RequestBody Quartz quartz){
+    public void updatejob(@RequestBody QuartzEntity quartz){
         repository.delete(quartz);
         repository.save(quartz);
 

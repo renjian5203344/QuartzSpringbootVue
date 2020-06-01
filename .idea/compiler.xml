@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="QuartzSpringboot" />
         <module name="springbootTest" />
+        <module name="JavaTask" />
       </profile>
     </annotationProcessing>
   </component>
