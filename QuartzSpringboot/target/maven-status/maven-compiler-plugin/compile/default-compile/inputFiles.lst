@@ -1,4 +1,13 @@
+/Users/newsan/workspace/test/QuartzSpringbootVue/QuartzSpringboot/src/main/java/com/yizhan/QuartzStarter.java
 /Users/newsan/workspace/test/QuartzSpringbootVue/QuartzSpringboot/src/main/java/com/yizhan/trigger/Myjob.java
+/Users/newsan/workspace/test/QuartzSpringbootVue/QuartzSpringboot/src/main/java/com/yizhan/listener/SimpleTriggerListener.java
+/Users/newsan/workspace/test/QuartzSpringbootVue/QuartzSpringboot/src/main/java/com/yizhan/listener/SchedulerListener.java
+/Users/newsan/workspace/test/QuartzSpringbootVue/QuartzSpringboot/src/main/java/com/yizhan/controller/TestPersonController.java
 /Users/newsan/workspace/test/QuartzSpringbootVue/QuartzSpringboot/src/main/java/com/yizhan/trigger/SimpleTriggerMain.java
-/Users/newsan/workspace/test/QuartzSpringbootVue/QuartzSpringboot/src/main/java/com/yizhan/trigger/JobTest.java
+/Users/newsan/workspace/test/QuartzSpringbootVue/QuartzSpringboot/src/main/java/com/yizhan/listener/SimpleJobListener.java
 /Users/newsan/workspace/test/QuartzSpringbootVue/QuartzSpringboot/src/main/java/com/yizhan/trigger/DoNothingJob.java
+/Users/newsan/workspace/test/QuartzSpringbootVue/QuartzSpringboot/src/main/java/com/yizhan/repository/PersionRepository.java
+/Users/newsan/workspace/test/QuartzSpringbootVue/QuartzSpringboot/src/main/java/com/yizhan/dataobject/Person.java
+/Users/newsan/workspace/test/QuartzSpringbootVue/QuartzSpringboot/src/main/java/com/yizhan/controller/QuartzJobCotroller.java
+/Users/newsan/workspace/test/QuartzSpringbootVue/QuartzSpringboot/src/main/java/com/yizhan/trigger/JobTest.java
+/Users/newsan/workspace/test/QuartzSpringbootVue/QuartzSpringboot/src/main/java/com/yizhan/config/QuartzConfiguration.java
