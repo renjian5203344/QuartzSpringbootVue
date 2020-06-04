@@ -16,7 +16,12 @@ public class JavaTask implements Job {
         JobDataMap map = context.getMergedJobDataMap();
         String jarPath = map.getString("jarPath");//jar执行路径
         String parameter = map.getString("parameter");//参数
+
+        String param1 = parameter.split(" ")[0];
+        String param2 = parameter.split(" ")[1];
+
         String vmParam = map.getString("vmParam");//jvm参数
+
         String id = map.getString("id");
         System.out.println("Running Job name :  " + map.getString("name"));
         System.out.println("Running Job description : " + map.getString("JobDescription"));
@@ -37,12 +42,12 @@ public class JavaTask implements Job {
                 List<String> commands = new ArrayList<String>();
                 commands.add("java");
 
-                if (!StringUtils.isEmpty(vmParam))commands.add(vmParam);
+                if (!StringUtils.isEmpty(vmParam)) commands.add(vmParam);
                 commands.add("-jar");
                 commands.add(jarPath);
 
 
-                if (!StringUtils.isEmpty(parameter)) commands.add(vmParam);
+                if (!StringUtils.isEmpty(parameter)) commands.add(param1); commands.add(param2);
                 processBuilder.command(commands);
 
                 System.out.println("Running Job details as follows >>>>>>>>>>>>>>>>>>>>: ");
