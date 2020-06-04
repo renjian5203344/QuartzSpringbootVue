@@ -17,8 +17,9 @@ public class JavaTask implements Job {
         String jarPath = map.getString("jarPath");//jar执行路径
         String parameter = map.getString("parameter");//参数
 
-        String param1 = parameter.split(" ")[0];
-        String param2 = parameter.split(" ")[1];
+//        String param1 = parameter.split(" ")[0];
+//        String param2 = parameter.split(" ")[1];
+
 
         String vmParam = map.getString("vmParam");//jvm参数
 
@@ -47,7 +48,13 @@ public class JavaTask implements Job {
                 commands.add(jarPath);
 
 
-                if (!StringUtils.isEmpty(parameter)) commands.add(param1); commands.add(param2);
+                if (!StringUtils.isEmpty(parameter)){
+                    String[] paramArray = parameter.split("\t\t");
+                    for (String param: paramArray){
+                        commands.add(param);
+                    }
+
+                }
                 processBuilder.command(commands);
 
                 System.out.println("Running Job details as follows >>>>>>>>>>>>>>>>>>>>: ");

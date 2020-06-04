@@ -20,7 +20,7 @@ public class JavaTestMain {
         JobDataMap newJobDataMap = new JobDataMap();
 
         newJobDataMap.put("jarPath" ,"/Users/newsan/yizhanJavaTask2.jar");
-        newJobDataMap.put("parameter","test1 test2");
+        newJobDataMap.put("parameter","test1\t\ttest2");
         //建造者模式
         JobDetail job = JobBuilder.newJob(JavaTask.class).withIdentity("job1","group1").usingJobData(newJobDataMap).build();
         //在当前15S后运行
