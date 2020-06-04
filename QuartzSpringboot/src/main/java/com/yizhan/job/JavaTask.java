@@ -43,7 +43,14 @@ public class JavaTask implements Job {
                 List<String> commands = new ArrayList<String>();
                 commands.add("java");
 
-                if (!StringUtils.isEmpty(vmParam)) commands.add(vmParam);
+                if (!StringUtils.isEmpty(vmParam)){
+                  String[] vmParamArray =vmParam.split("\t\t");
+                  for (String vmPara: vmParamArray){
+
+                      commands.add(vmPara);
+                  }
+
+                }
                 commands.add("-jar");
                 commands.add(jarPath);
 
