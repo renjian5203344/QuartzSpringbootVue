@@ -1,11 +1,10 @@
 package com.yizhan.dataobject;
-
 import lombok.Data;
-
 import javax.persistence.*;
 
 @Entity
 @Data
+
 public class Quartz {
 
     @Id

@@ -14,7 +14,6 @@ import java.util.Date;
 @RestController
 public class QuartzJobCotroller {
 
-
     @Autowired
     private Scheduler scheduler;
 

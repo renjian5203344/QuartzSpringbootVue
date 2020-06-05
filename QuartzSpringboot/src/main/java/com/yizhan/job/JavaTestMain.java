@@ -1,15 +1,8 @@
 package com.yizhan.job;
 
-
-import com.yizhan.listener.SchedulerListener;
-import com.yizhan.listener.SimpleJobListener;
-import com.yizhan.listener.SimpleTriggerListener;
-import com.yizhan.trigger.Myjob;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
-import org.quartz.impl.matchers.KeyMatcher;
 
-import java.io.File;
 import java.util.Date;
 
 public class JavaTestMain {

@@ -45,4 +45,9 @@ public class JavaQuartz {
     /**  任务分组,用于修改.  */
     @Column(name = "oldJobGroup", nullable = true, length = 50)
     private String oldJobGroup;
+
+    /**  任务状态,1创建、2暂停、3恢复.  */
+    @Column(name = "jobStatus", nullable = false, length = 20)
+    private Integer jobStatus;
+
 }
