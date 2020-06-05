@@ -7,6 +7,7 @@ public enum JobStatusEnum {
 
     NEW(0,"创建"),
     PAUSE(1,"暂停"),
+    RESUME(2,"重启"),
     ;
 
     private Integer code;

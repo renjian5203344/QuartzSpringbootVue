@@ -29,5 +29,10 @@ public class JavaTaskController {
         javaTaskservice.pauseJavaTask(javaQuartz);
     }
 
+    @RequestMapping(value = "resumeJob",method = RequestMethod.POST)
+    public void resumeJob(@RequestBody JavaQuartz javaQuartz){
+        javaTaskservice.resumeJavaTask(javaQuartz);
+    }
+
 }
 

@@ -67,6 +67,33 @@ public class JavaTaskservice {
 
     }
 
+
+    public void resumeJavaTask(JavaQuartz javaQuartz) {
+
+//        Optional<JavaQuartz> optional = repository.findById(javaQuartz.getId());
+//        JavaQuartz javaQuartz1 = optional.get();
+        JavaQuartz javaQuartz1 = repository.getOne(javaQuartz.getId());
+
+        if (javaQuartz1!=null){
+
+            javaQuartz1.setJobStatus(JobStatusEnum.RESUME.getCode());
+
+            repository.flush();
+        }
+
+        JobKey jobKey = new JobKey(javaQuartz.getJobName(),javaQuartz.getJobGroup());
+        try {
+            scheduler.resumeJob(jobKey);
+
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+
     /***
      * 构建JobDataMap
      * @param javaQuartz
