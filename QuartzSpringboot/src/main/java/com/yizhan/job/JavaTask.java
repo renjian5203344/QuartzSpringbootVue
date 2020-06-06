@@ -1,6 +1,10 @@
 package com.yizhan.job;
+import com.yizhan.dataobject.JavaQuartz;
+import com.yizhan.enums.JobStatusEnum;
+import com.yizhan.repository.JavaQuartzTaskRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.io.*;
 import java.util.ArrayList;
@@ -9,6 +13,10 @@ import java.util.List;
 @DisallowConcurrentExecution
 @Component
 public class JavaTask implements Job {
+
+    @Autowired
+    JavaQuartzTaskRepository repository;
+
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -31,6 +39,11 @@ public class JavaTask implements Job {
         System.out.println("Running Job jar path : {} " + jarPath);
         System.out.println("Running Job parameter : {} " + parameter);
         System.out.println("Running Job vmParam : {} " + vmParam);
+
+        if (!canStart(map.getString("name"), map.getString("group"))){//如果不能跑
+            return;
+
+        }
 
 
         long startTime = System.currentTimeMillis();
@@ -87,6 +100,33 @@ public class JavaTask implements Job {
         BufferedReader errorReader = new BufferedReader(new InputStreamReader(errorStream));
        while ((inputLine = inputReader.readLine()) != null) System.out.println(inputLine);
         while ((errorLine = errorReader.readLine()) != null) System.out.println(errorLine);
+    }
+
+
+    /***
+     *   判断是否执行
+     * @param jobName   任务名称
+     * @param groupName  任务分组
+     * @return  布尔类型  返回true表示已完成，返回false表示未完成
+     */
+    private boolean canStart(String jobName,String groupName){
+        JavaQuartz javaQuartz = repository.findByJobNameAndJobGroup(jobName,groupName);//首先根据jobName和groupName查询出javaQuartz对象
+       Long parentTaskId = javaQuartz.getParentTaskId();//取javaQuartz对象ParentTaskId
+       if (parentTaskId == -1){//如果parentTaskId等于-1
+           return  true; //返回true
+       }else {//如果parentTaskId不等于-1
+           JavaQuartz javaQuartzParent = repository.findById(parentTaskId).get();//根据parentTaskId查询出javaQuartzParent父对象
+
+              if (javaQuartzParent.getJobStatus() == JobStatusEnum.FINISH.getCode()){ //如果如果父任务的jobStatus等于4
+                  return true;//返回true
+              }else {
+                  return false;
+              }
+
+
+
+
+       }
     }
 
 

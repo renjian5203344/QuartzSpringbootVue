@@ -4,4 +4,8 @@ import com.yizhan.dataobject.JavaQuartz;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface JavaQuartzTaskRepository extends JpaRepository<JavaQuartz,Long> {
+
+    public JavaQuartz findByJobNameAndJobGroup(String jobName, String jobGroup);
+
+
 }

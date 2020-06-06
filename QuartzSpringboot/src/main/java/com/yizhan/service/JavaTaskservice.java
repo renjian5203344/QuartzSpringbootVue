@@ -1,5 +1,6 @@
 package com.yizhan.service;
 
+import com.sun.tools.classfile.ConstantPool;
 import com.yizhan.dataobject.JavaQuartz;
 import com.yizhan.enums.JobStatusEnum;
 import com.yizhan.job.JavaTask;
@@ -22,6 +23,11 @@ public class JavaTaskservice {
     private Scheduler scheduler;
 
     public void saveJavaTask(JavaQuartz javaQuartz) {
+      if (javaQuartz.getParentTaskId()==0L){
+          javaQuartz.setParentTaskId(-1L);
+
+      }
+
         javaQuartz.setJobStatus(JobStatusEnum.NEW.getCode());
         repository.save(javaQuartz);
         JobDataMap newJobDataMap = getJobDataMap(javaQuartz);
@@ -106,6 +112,9 @@ public class JavaTaskservice {
         String jarPath = javaQuartz.getJarPath();
         String parameter = javaQuartz.getParameter();
         String vmParam = javaQuartz.getVmParam();
+
+        jobDataMap.put("name",javaQuartz.getJobName());
+        jobDataMap.put("group",javaQuartz.getJobGroup());
         if (StringUtils.isNotBlank(jarPath)){
             jobDataMap.put("jarPath" ,jarPath);
 
@@ -125,6 +134,8 @@ public class JavaTaskservice {
 
 
     }
+
+
 
 
 
