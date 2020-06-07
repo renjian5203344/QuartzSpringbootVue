@@ -5,10 +5,11 @@ import lombok.Getter;
 @Getter
 public enum JobStatusEnum {
 
-    NEW(0,"创建"),
-    PAUSE(1,"暂停"),
-    RESUME(2,"重启"),
-    FINISH(3,"已完成"),
+    ENABLED(0,"未启动"),
+    NEW(1,"启动"),
+    PAUSE(2,"暂停"),
+    RESUME(3,"重启"),
+    FINISH(4,"已完成"),
     ;
 
     private Integer code;

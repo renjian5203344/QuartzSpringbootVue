@@ -23,26 +23,32 @@ public class JavaTaskservice {
     private Scheduler scheduler;
 
     public void saveJavaTask(JavaQuartz javaQuartz) {
-      if (javaQuartz.getParentTaskId()==0L){
-          javaQuartz.setParentTaskId(-1L);
+        if (javaQuartz.getParentTaskId() == 0L) {
+            javaQuartz.setParentTaskId(-1L);
 
-      }
+        }
 
+        JavaQuartz result =repository.findByJobNameAndJobGroup(javaQuartz.getJobName(),javaQuartz.getJobGroup());
+        if (result != null) {
+            System.out.println("jobName 和　jobGroup已经存在");
+            return;
+
+        }
         javaQuartz.setJobStatus(JobStatusEnum.NEW.getCode());
         repository.save(javaQuartz);
         JobDataMap newJobDataMap = getJobDataMap(javaQuartz);
-        JobDetail job = JobBuilder.newJob(JavaTask.class).withIdentity(javaQuartz.getJobName(), javaQuartz.getJobGroup()).usingJobData(newJobDataMap).build();
+        JobDetail job =
+                JobBuilder.newJob(JavaTask.class).withIdentity(javaQuartz.getJobName(), javaQuartz.getJobGroup()).usingJobData(newJobDataMap).build();
 
         Trigger trigger = TriggerBuilder.newTrigger()
                 .withIdentity(javaQuartz.getJobName(), javaQuartz.getJobGroup())
                 .withSchedule(CronScheduleBuilder.cronSchedule(javaQuartz.getCronExpression()))
                 .build();
         try {
-            scheduler.scheduleJob(job,trigger);
+            scheduler.scheduleJob(job, trigger);
         } catch (SchedulerException e) {
             e.printStackTrace();
         }
-
 
     }
 
@@ -53,7 +59,7 @@ public class JavaTaskservice {
 //        JavaQuartz javaQuartz1 = optional.get();
         JavaQuartz javaQuartz1 = repository.getOne(javaQuartz.getId());
 
-        if (javaQuartz1!=null){
+        if (javaQuartz1 != null) {
 
 //            repository.deleteById(javaQuartz.getId());
             javaQuartz1.setJobStatus(JobStatusEnum.PAUSE.getCode());
@@ -62,7 +68,7 @@ public class JavaTaskservice {
             repository.flush();
         }
 
-        JobKey jobKey = new JobKey(javaQuartz.getJobName(),javaQuartz.getJobGroup());
+        JobKey jobKey = new JobKey(javaQuartz.getJobName(), javaQuartz.getJobGroup());
         try {
             scheduler.pauseJob(jobKey);
 
@@ -80,14 +86,14 @@ public class JavaTaskservice {
 //        JavaQuartz javaQuartz1 = optional.get();
         JavaQuartz javaQuartz1 = repository.getOne(javaQuartz.getId());
 
-        if (javaQuartz1!=null){
+        if (javaQuartz1 != null) {
 
             javaQuartz1.setJobStatus(JobStatusEnum.RESUME.getCode());
 
             repository.flush();
         }
 
-        JobKey jobKey = new JobKey(javaQuartz.getJobName(),javaQuartz.getJobGroup());
+        JobKey jobKey = new JobKey(javaQuartz.getJobName(), javaQuartz.getJobGroup());
         try {
             scheduler.resumeJob(jobKey);
 
@@ -99,32 +105,31 @@ public class JavaTaskservice {
     }
 
 
-
     /***
      * 构建JobDataMap
      * @param javaQuartz
-     * @return  JobDataMap对象
+     * @return JobDataMap对象
      */
 
 
-    private JobDataMap getJobDataMap(JavaQuartz javaQuartz){
+    private JobDataMap getJobDataMap(JavaQuartz javaQuartz) {
         JobDataMap jobDataMap = new JobDataMap();
         String jarPath = javaQuartz.getJarPath();
         String parameter = javaQuartz.getParameter();
         String vmParam = javaQuartz.getVmParam();
 
-        jobDataMap.put("name",javaQuartz.getJobName());
-        jobDataMap.put("group",javaQuartz.getJobGroup());
-        if (StringUtils.isNotBlank(jarPath)){
-            jobDataMap.put("jarPath" ,jarPath);
+        jobDataMap.put("name", javaQuartz.getJobName());
+        jobDataMap.put("group", javaQuartz.getJobGroup());
+        if (StringUtils.isNotBlank(jarPath)) {
+            jobDataMap.put("jarPath", jarPath);
 
         }
-        if (StringUtils.isNotBlank(parameter)){
-            jobDataMap.put("parameter",parameter);
+        if (StringUtils.isNotBlank(parameter)) {
+            jobDataMap.put("parameter", parameter);
 
         }
-        if (StringUtils.isNotBlank(vmParam)){
-            jobDataMap.put("vmParam",vmParam);
+        if (StringUtils.isNotBlank(vmParam)) {
+            jobDataMap.put("vmParam", vmParam);
 
         }
 
@@ -136,6 +141,57 @@ public class JavaTaskservice {
     }
 
 
+    public void createTuoPuJavaTask(JavaQuartz javaQuartz) {
+        //设置默认任务状态
+        javaQuartz.setJobStatus(JobStatusEnum.ENABLED.getCode());
+
+        if (javaQuartz.getParentTaskId() == 0L) {
+            javaQuartz.setParentTaskId(-1L);
+
+        }
+
+        JavaQuartz result =repository.findByJobNameAndJobGroup(javaQuartz.getJobName(),javaQuartz.getJobGroup());
+        if (result != null) {
+            System.out.println("jobName 和　jobGroup已经存在");
+            return;
+
+        }
+        repository.save(javaQuartz);
+
+
+    }
+
+
+    /**
+     * 启动单个拓扑任务方法
+     * @param id
+     */
+    public void startSingleTuoPuJob(Long id) {
+
+        JavaQuartz javaQuartz = repository.getOne(id);
+
+        if (javaQuartz != null && javaQuartz.getJobStatus()==JobStatusEnum.ENABLED.getCode()&&javaQuartz.getParentTaskId()==-1L) {
+
+            JobDataMap newJobDataMap = getJobDataMap(javaQuartz);
+            JobDetail job =
+                    JobBuilder.newJob(JavaTask.class).withIdentity(javaQuartz.getJobName(), javaQuartz.getJobGroup()).usingJobData(newJobDataMap).build();
+
+            Trigger trigger = TriggerBuilder.newTrigger()
+                    .withIdentity(javaQuartz.getJobName(), javaQuartz.getJobGroup())
+                    .withSchedule(CronScheduleBuilder.cronSchedule(javaQuartz.getCronExpression()))
+                    .build();
+            try {
+                scheduler.scheduleJob(job, trigger);
+            } catch (SchedulerException e) {
+                e.printStackTrace();
+            }
+
+            javaQuartz.setJobStatus(JobStatusEnum.NEW.getCode());
+
+            repository.flush();
+        }
+
+    }
 
 
 
