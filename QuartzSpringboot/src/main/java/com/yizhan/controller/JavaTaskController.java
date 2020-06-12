@@ -37,7 +37,11 @@ public class JavaTaskController {
     }
 
 
-
+    /****
+     * 创建单个任务，没有拓扑结构
+     * @param javaQuartz
+     * @return
+     */
     @PostMapping( value = "/pauseJob")
     public ResultVO pauseJob(@RequestBody JavaQuartz javaQuartz){
         javaTaskservice.pauseJavaTask(javaQuartz);
@@ -69,6 +73,17 @@ public class JavaTaskController {
         Long id = javaQuartz.getId();
         javaTaskservice.startSingleTuoPuJob(id);
         return ResultVOUtil.success();
+    }
+
+
+
+
+    //startAllTuoPuJob可以启动所有，可以指定部分
+    @PostMapping( value = "/startAllTuoPuJob")
+    public  ResultVO startAllTuoPuJob(){
+        javaTaskservice.startAllTuoPuJobs();
+        return ResultVOUtil.success();
+
     }
 
 

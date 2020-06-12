@@ -8,7 +8,7 @@ public enum JobStatusEnum {
     ENABLED(0,"未启动"),
     NEW(1,"启动"),
     PAUSE(2,"暂停"),
-    RESUME(3,"重启"),
+    RESUME(3,"恢复"),
     FINISH(4,"已完成"),
     ;
 

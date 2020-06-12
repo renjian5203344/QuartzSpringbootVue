@@ -56,7 +56,7 @@ public class JavaTask implements Job {
                 List<String> commands = new ArrayList<String>();
                 commands.add("java");
 
-                if (!StringUtils.isEmpty(vmParam)){
+                if (!StringUtils.isEmpty(vmParam)){//如果vmParam不为空
                   String[] vmParamArray =vmParam.split("\t\t");
                   for (String vmPara: vmParamArray){
 

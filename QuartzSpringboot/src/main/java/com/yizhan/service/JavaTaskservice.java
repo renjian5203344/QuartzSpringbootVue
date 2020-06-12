@@ -1,16 +1,20 @@
 package com.yizhan.service;
 
-import com.sun.tools.classfile.ConstantPool;
 import com.yizhan.dataobject.JavaQuartz;
 import com.yizhan.enums.JobStatusEnum;
 import com.yizhan.job.JavaTask;
+import com.yizhan.listener.JavaTaskListener;
+import com.yizhan.listener.SimpleJobListener;
 import com.yizhan.repository.JavaQuartzTaskRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
+import org.quartz.impl.matchers.KeyMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,7 +26,7 @@ public class JavaTaskservice {
     @Autowired
     private Scheduler scheduler;
 
-    public void saveJavaTask(JavaQuartz javaQuartz) {
+    public void saveJavaTask(JavaQuartz javaQuartz) {//入参JavaQuartz实体
         if (javaQuartz.getParentTaskId() == 0L) {
             javaQuartz.setParentTaskId(-1L);
 
@@ -36,15 +40,20 @@ public class JavaTaskservice {
         }
         javaQuartz.setJobStatus(JobStatusEnum.NEW.getCode());
         repository.save(javaQuartz);
-        JobDataMap newJobDataMap = getJobDataMap(javaQuartz);
+        JobDataMap newJobDataMap = getJobDataMap(javaQuartz);//构建数据对象newJobDataMap
+        //构建JobDetai
         JobDetail job =
                 JobBuilder.newJob(JavaTask.class).withIdentity(javaQuartz.getJobName(), javaQuartz.getJobGroup()).usingJobData(newJobDataMap).build();
-
+        //构建Trigger
         Trigger trigger = TriggerBuilder.newTrigger()
                 .withIdentity(javaQuartz.getJobName(), javaQuartz.getJobGroup())
                 .withSchedule(CronScheduleBuilder.cronSchedule(javaQuartz.getCronExpression()))
                 .build();
         try {
+            //注册监听器
+          //  scheduler.getListenerManager().addJobListener(new SimpleJobListener(), KeyMatcher.keyEquals(JobKey.jobKey("job1", "group1")));
+            scheduler.getListenerManager().addJobListener(new JavaTaskListener(repository), KeyMatcher.keyEquals(JobKey.jobKey(javaQuartz.getJobName(), javaQuartz.getJobGroup())));
+
             scheduler.scheduleJob(job, trigger);
         } catch (SchedulerException e) {
             e.printStackTrace();
@@ -106,21 +115,21 @@ public class JavaTaskservice {
 
 
     /***
-     * 构建JobDataMap
-     * @param javaQuartz
+     * 构建JobDataMap对象
+     * @param javaQuartz  Java任务实体类
      * @return JobDataMap对象
      */
 
 
     private JobDataMap getJobDataMap(JavaQuartz javaQuartz) {
         JobDataMap jobDataMap = new JobDataMap();
-        String jarPath = javaQuartz.getJarPath();
-        String parameter = javaQuartz.getParameter();
-        String vmParam = javaQuartz.getVmParam();
+        String jarPath = javaQuartz.getJarPath();//取得jarPath
+        String parameter = javaQuartz.getParameter();//取得 parameter
+        String vmParam = javaQuartz.getVmParam();//取得 vmParam
 
         jobDataMap.put("name", javaQuartz.getJobName());
         jobDataMap.put("group", javaQuartz.getJobGroup());
-        if (StringUtils.isNotBlank(jarPath)) {
+        if (StringUtils.isNotBlank(jarPath)) {//判断jarPath不为空
             jobDataMap.put("jarPath", jarPath);
 
         }
@@ -181,6 +190,9 @@ public class JavaTaskservice {
                     .withSchedule(CronScheduleBuilder.cronSchedule(javaQuartz.getCronExpression()))
                     .build();
             try {
+                //注册监听器
+                //  scheduler.getListenerManager().addJobListener(new SimpleJobListener(), KeyMatcher.keyEquals(JobKey.jobKey("job1", "group1")));
+                scheduler.getListenerManager().addJobListener(new JavaTaskListener(repository), KeyMatcher.keyEquals(JobKey.jobKey(javaQuartz.getJobName(), javaQuartz.getJobGroup())));
                 scheduler.scheduleJob(job, trigger);
             } catch (SchedulerException e) {
                 e.printStackTrace();
@@ -194,5 +206,33 @@ public class JavaTaskservice {
     }
 
 
+    /**
+     * 启动部分拓扑任务方法
+     * @param ids
+     */
+    public void startTuoPuJobs(List<Long> ids)  {
+        for (int i = 0;i < ids.size(); i++ ){
+
+            startSingleTuoPuJob(ids.get(i));
+            System.out.println("  startTuoPuJobs============"+ ids.get(i));
+
+        }
+
+    }
+
+    /**
+     * 启动所有拓扑任务方法
+     * @param
+     */
+    public void startAllTuoPuJobs()  {
+       List<JavaQuartz> javaQuartzList =repository.findByParentTaskIdAndJobStatus(-1L,JobStatusEnum.ENABLED.getCode());
+       List<Long> ids = new ArrayList<Long>();
+       for (JavaQuartz javaQuartz:javaQuartzList){
+           ids.add(javaQuartz.getId());
+           System.out.println(" startAllTuoPuJobs============"+ javaQuartz.getId());
+       }
+       startTuoPuJobs(ids);
+
+    }
 
 }

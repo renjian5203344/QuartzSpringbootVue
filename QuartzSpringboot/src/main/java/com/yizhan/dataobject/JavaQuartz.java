@@ -54,7 +54,7 @@ public class JavaQuartz {
     @Column(name = "oldJobGroup", nullable = true, length = 50)
     private String oldJobGroup;
 
-    /**  任务状态,1、未启动、1启动、2暂停、3恢复、4已完成 .  */
+    /**  任务状态,1、0未启动、1启动、2暂停、3恢复、4已完成 .  */
     @Column(name = "jobStatus", nullable = false, length = 20)
     private Integer jobStatus;
 
