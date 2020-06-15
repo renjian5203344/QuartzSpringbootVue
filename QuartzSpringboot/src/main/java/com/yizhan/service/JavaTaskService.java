@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class JavaTaskservice {
+public class JavaTaskService {
 
     @Autowired
     JavaQuartzTaskRepository repository;
@@ -52,7 +52,7 @@ public class JavaTaskservice {
         try {
             //注册监听器
           //  scheduler.getListenerManager().addJobListener(new SimpleJobListener(), KeyMatcher.keyEquals(JobKey.jobKey("job1", "group1")));
-            scheduler.getListenerManager().addJobListener(new JavaTaskListener(repository), KeyMatcher.keyEquals(JobKey.jobKey(javaQuartz.getJobName(), javaQuartz.getJobGroup())));
+            scheduler.getListenerManager().addJobListener(new JavaTaskListener(repository,scheduler), KeyMatcher.keyEquals(JobKey.jobKey(javaQuartz.getJobName(), javaQuartz.getJobGroup())));
 
             scheduler.scheduleJob(job, trigger);
         } catch (SchedulerException e) {
@@ -121,7 +121,7 @@ public class JavaTaskservice {
      */
 
 
-    private JobDataMap getJobDataMap(JavaQuartz javaQuartz) {
+    public static JobDataMap getJobDataMap(JavaQuartz javaQuartz) {
         JobDataMap jobDataMap = new JobDataMap();
         String jarPath = javaQuartz.getJarPath();//取得jarPath
         String parameter = javaQuartz.getParameter();//取得 parameter
@@ -192,7 +192,7 @@ public class JavaTaskservice {
             try {
                 //注册监听器
                 //  scheduler.getListenerManager().addJobListener(new SimpleJobListener(), KeyMatcher.keyEquals(JobKey.jobKey("job1", "group1")));
-                scheduler.getListenerManager().addJobListener(new JavaTaskListener(repository), KeyMatcher.keyEquals(JobKey.jobKey(javaQuartz.getJobName(), javaQuartz.getJobGroup())));
+                scheduler.getListenerManager().addJobListener(new JavaTaskListener(repository,scheduler), KeyMatcher.keyEquals(JobKey.jobKey(javaQuartz.getJobName(), javaQuartz.getJobGroup())));
                 scheduler.scheduleJob(job, trigger);
             } catch (SchedulerException e) {
                 e.printStackTrace();

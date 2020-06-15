@@ -4,15 +4,13 @@ import com.yizhan.exception.SystemException;
 import lombok.extern.slf4j.Slf4j;
 import com.yizhan.VO.ResultVO;
 import com.yizhan.dataobject.JavaQuartz;
-import com.yizhan.service.JavaTaskservice;
+import com.yizhan.service.JavaTaskService;
 import com.yizhan.util.ResultVOUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Date;
 
 @RestController
 @RequestMapping(value = "/javaTask")
@@ -21,7 +19,7 @@ import java.util.Date;
 public class JavaTaskController {
 
     @Autowired
-    JavaTaskservice javaTaskservice;
+    JavaTaskService javaTaskservice;
 
     @PostMapping( value = "/createJob")
     public ResultVO createJob(@Valid @RequestBody JavaQuartz javaQuartz, BindingResult bindingResult){

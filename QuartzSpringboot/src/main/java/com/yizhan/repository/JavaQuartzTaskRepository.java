@@ -12,4 +12,6 @@ public interface JavaQuartzTaskRepository extends JpaRepository<JavaQuartz,Long>
     public List<JavaQuartz> findByParentTaskIdAndJobStatus(Long parentTaskId, Integer jobStatus);
 
 
+
+
 }

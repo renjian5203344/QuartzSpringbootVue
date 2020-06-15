@@ -107,13 +107,15 @@ public class JavaTask implements Job {
      *   判断是否执行
      * @param jobName   任务名称
      * @param groupName  任务分组
-     * @return  布尔类型  返回true表示已完成，返回false表示未完成
+     * @return  布尔类型  返回true表示可以执行，返回false表示不可以执行
      */
     private boolean canStart(String jobName,String groupName){
         JavaQuartz javaQuartz = repository.findByJobNameAndJobGroup(jobName,groupName);//首先根据jobName和groupName查询出javaQuartz对象
        Long parentTaskId = javaQuartz.getParentTaskId();//取javaQuartz对象ParentTaskId
        if (parentTaskId == -1){//如果parentTaskId等于-1
-           return  true; //返回true
+           if (javaQuartz.getJobStatus()!=JobStatusEnum.FINISH.getCode()){
+               return  true; //返回true,让它跑
+           }
        }else {//如果parentTaskId不等于-1
            JavaQuartz javaQuartzParent = repository.findById(parentTaskId).get();//根据parentTaskId查询出javaQuartzParent父对象
 
@@ -122,11 +124,8 @@ public class JavaTask implements Job {
               }else {
                   return false;
               }
-
-
-
-
        }
+       return false;
     }
 
 
