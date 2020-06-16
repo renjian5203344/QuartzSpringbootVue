@@ -61,6 +61,10 @@ public class JavaQuartz {
 
     /**  父任务id,如果没有父节点就是-1 .  */
     @Column(name = "parentTaskId", nullable = false, length = 20)
-    private   Long  parentTaskId ;
+    private   String  parentTaskId ;
+
+    /**  子任务id,如果没有子任务就是为空.  */
+    @Column(name = "childTaskId", nullable = false, length = 20)
+    private   String  childTaskId ;
 
 }

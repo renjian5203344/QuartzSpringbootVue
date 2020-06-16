@@ -3,16 +3,26 @@ import com.yizhan.dataobject.JavaQuartz;
 import com.yizhan.enums.JobStatusEnum;
 import com.yizhan.repository.JavaQuartzTaskRepository;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.util.threads.TaskThread;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 @DisallowConcurrentExecution
 @Component
 public class JavaTask implements Job {
+
+    public JavaTask(){
+        new Thread(new MyTaskView(queue)).start();
+    }
+
+
+    LinkedBlockingDeque<String> queue = new LinkedBlockingDeque<String>();
 
     @Autowired
     JavaQuartzTaskRepository repository;
@@ -98,8 +108,22 @@ public class JavaTask implements Job {
         String errorLine;
         BufferedReader inputReader = new BufferedReader(new InputStreamReader(inputStream));
         BufferedReader errorReader = new BufferedReader(new InputStreamReader(errorStream));
-       while ((inputLine = inputReader.readLine()) != null) System.out.println(inputLine);
-        while ((errorLine = errorReader.readLine()) != null) System.out.println(errorLine);
+       while ((inputLine = inputReader.readLine()) != null) {
+           try {
+               queue.put(inputLine);
+           } catch (InterruptedException e) {
+               e.printStackTrace();
+           }
+           System.out.println(inputLine);
+       }
+        while ((errorLine = errorReader.readLine()) != null) {
+            try {
+                queue.put(errorLine);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(errorLine);
+        }
     }
 
 
@@ -111,22 +135,66 @@ public class JavaTask implements Job {
      */
     private boolean canStart(String jobName,String groupName){
         JavaQuartz javaQuartz = repository.findByJobNameAndJobGroup(jobName,groupName);//首先根据jobName和groupName查询出javaQuartz对象
-       Long parentTaskId = javaQuartz.getParentTaskId();//取javaQuartz对象ParentTaskId
-       if (parentTaskId == -1){//如果parentTaskId等于-1
+       String parentTaskId = javaQuartz.getParentTaskId();//取javaQuartz对象的ParentTaskId
+       if ("-1".equals(parentTaskId)){//如果parentTaskId等于-1
            if (javaQuartz.getJobStatus()!=JobStatusEnum.FINISH.getCode()){
                return  true; //返回true,让它跑
            }
        }else {//如果parentTaskId不等于-1
-           JavaQuartz javaQuartzParent = repository.findById(parentTaskId).get();//根据parentTaskId查询出javaQuartzParent父对象
+           String[] parentIds = parentTaskId.split(",");
+           List<Long> parentIdList = new ArrayList<Long>();
+           for (String id: parentIds){//循环parentIds
+               if (StringUtils.isBlank(id)){ //如果id不等于空字符串
+                   parentIdList.add(Long.valueOf(id));
+               }
+           }
 
-              if (javaQuartzParent.getJobStatus() == JobStatusEnum.FINISH.getCode()){ //如果如果父任务的jobStatus等于4
-                  return true;//返回true
+           List<JavaQuartz> parentList = repository.findByIdIn(parentIdList);
+
+           boolean allComplete = true;  //标记，是否都完成，默认为true
+           for (JavaQuartz entity: parentList){
+
+               if (entity.getJobStatus() != JobStatusEnum.FINISH.getCode()){ //如果如果父任务的jobStatus等于4
+                   allComplete = false;
+               }
+
+           }
+
+              if (allComplete){ //如果所有都执行完，返回true,否则返回false
+                  return true;
               }else {
                   return false;
               }
        }
        return false;
     }
+
+
+    /***
+     * 内部类
+     */
+    class  MyTaskView implements Runnable {
+        private LinkedBlockingDeque<String> queue;
+        public MyTaskView(LinkedBlockingDeque<String> queue){
+            this.queue = queue;
+        }
+
+
+      @Override
+      public void run() {
+                try {
+                    while (true) {
+                    String lines = queue.take();
+                        System.out.println(" MyTaskView=="+lines);
+                    }
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+      }
 
 
 }

@@ -5,10 +5,12 @@ import com.yizhan.enums.JobStatusEnum;
 import com.yizhan.job.JavaTask;
 import com.yizhan.repository.JavaQuartzTaskRepository;
 import com.yizhan.service.JavaTaskService;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
 import org.quartz.impl.matchers.KeyMatcher;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -71,8 +73,17 @@ public class JavaTaskListener implements JobListener {
         System.out.println(jobName + " is going to be executed==by methdod ==jobWasExecuted");
 
         //更新完父任务状态之后，启动子任务（子任务从数据库给查出来）
-        List<JavaQuartz> childList =
-                repository.findByParentTaskIdAndJobStatus(javaQuartz.getId(), JobStatusEnum.ENABLED.getCode());
+        String idsList = javaQuartz.getChildTaskId();
+        String[] childStringList = idsList.split(",");
+        List<Long> childIdsList = new ArrayList<Long>();
+        for  (String id:childStringList){
+            if (StringUtils.isNotBlank(id)){  //如果id不等于空字符串
+                childIdsList.add(Long.valueOf(id));//Long.valueOf(id) String转化成long
+            }
+        }
+
+        List<JavaQuartz> childList = repository.findByIdInAndJobStatus(childIdsList,JobStatusEnum.ENABLED.getCode());
+
         if (childList != null && childList.size() > 0) {
             startChildTask(childList);
         }
@@ -82,6 +93,31 @@ public class JavaTaskListener implements JobListener {
 
     private void startChildTask(List<JavaQuartz> childList) {
         for (JavaQuartz javaQuartz : childList) {
+            String ids = javaQuartz.getParentTaskId();
+            String[] parentIds = ids.split(",");
+            List<Long> parentidList = new ArrayList<Long>();
+            for (String id: parentIds){
+                if (StringUtils.isBlank(id)){
+                    parentidList.add(Long.valueOf(id));
+                }
+
+            }
+
+              List<JavaQuartz> parentList = repository.findByIdIn(parentidList);
+              boolean parentHasCpmplete = true;  //标实
+
+
+              for (JavaQuartz javaQuartz1:parentList){
+                if (javaQuartz1.getJobStatus()!= JobStatusEnum.FINISH.getCode()){
+                    System.out.println("还有父任务未完成！！！");
+                     parentHasCpmplete = false;
+                    break;
+                }
+              }
+              if (!parentHasCpmplete){//如果false，继续循环
+                  continue;
+              }
+
 
             if (javaQuartz.getJobStatus() == JobStatusEnum.FINISH.getCode()) {
                 System.out.println("该任务已经执行完毕！！！");

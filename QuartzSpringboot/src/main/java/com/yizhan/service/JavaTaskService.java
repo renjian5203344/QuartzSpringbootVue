@@ -27,8 +27,8 @@ public class JavaTaskService {
     private Scheduler scheduler;
 
     public void saveJavaTask(JavaQuartz javaQuartz) {//入参JavaQuartz实体
-        if (javaQuartz.getParentTaskId() == 0L) {
-            javaQuartz.setParentTaskId(-1L);
+        if (StringUtils.isBlank(javaQuartz.getParentTaskId())) {
+            javaQuartz.setParentTaskId("-1");
 
         }
 
@@ -151,23 +151,49 @@ public class JavaTaskService {
 
 
     public void createTuoPuJavaTask(JavaQuartz javaQuartz) {
-        //设置默认任务状态
+        //1.设置默认任务状态
         javaQuartz.setJobStatus(JobStatusEnum.ENABLED.getCode());
 
-        if (javaQuartz.getParentTaskId() == 0L) {
-            javaQuartz.setParentTaskId(-1L);
+        //2.如果ParentTaskId为空，设置为-1
+
+        if (StringUtils.isBlank(javaQuartz.getParentTaskId())) {
+            javaQuartz.setParentTaskId("-1");
 
         }
 
+         //3.去重判断
         JavaQuartz result =repository.findByJobNameAndJobGroup(javaQuartz.getJobName(),javaQuartz.getJobGroup());
         if (result != null) {
             System.out.println("jobName 和　jobGroup已经存在");
             return;
 
         }
-        repository.save(javaQuartz);
 
-
+      repository.save(javaQuartz);
+        String quartzEntityId = javaQuartz.getId()+"";
+        String parentTaskId = javaQuartz.getParentTaskId();
+        if(!parentTaskId.equals("-1")){
+            String[] parentids = parentTaskId.split(",");
+            for(String id:parentids){
+                if(StringUtils.isNotBlank(id)){
+                    JavaQuartz javaQuartzEntity22 = repository.findById(Long.valueOf(id)).get();
+                    String preChild = javaQuartzEntity22.getChildTaskId();
+                    String [] prechildString = preChild.split(",");
+                    boolean isAdd = true;
+                    for(String prechildid:prechildString){
+                        if(prechildid.equals(quartzEntityId)){
+                            isAdd = false;
+                            break;
+                        }
+                    }
+                    if(isAdd){
+                        preChild += preChild + ","+quartzEntityId;
+                    }
+                    javaQuartzEntity22.setChildTaskId(preChild);
+                    repository.save(javaQuartzEntity22);
+                }
+            }
+        }
     }
 
 
@@ -179,7 +205,7 @@ public class JavaTaskService {
 
         JavaQuartz javaQuartz = repository.getOne(id);
 
-        if (javaQuartz != null && javaQuartz.getJobStatus()==JobStatusEnum.ENABLED.getCode()&&javaQuartz.getParentTaskId()==-1L) {
+        if (javaQuartz != null && javaQuartz.getJobStatus()==JobStatusEnum.ENABLED.getCode()&&"-1".equals(javaQuartz.getParentTaskId())) {
 
             JobDataMap newJobDataMap = getJobDataMap(javaQuartz);
             JobDetail job =
@@ -225,7 +251,7 @@ public class JavaTaskService {
      * @param
      */
     public void startAllTuoPuJobs()  {
-       List<JavaQuartz> javaQuartzList =repository.findByParentTaskIdAndJobStatus(-1L,JobStatusEnum.ENABLED.getCode());
+       List<JavaQuartz> javaQuartzList =repository.findByParentTaskIdAndJobStatus("-1",JobStatusEnum.ENABLED.getCode());
        List<Long> ids = new ArrayList<Long>();
        for (JavaQuartz javaQuartz:javaQuartzList){
            ids.add(javaQuartz.getId());
