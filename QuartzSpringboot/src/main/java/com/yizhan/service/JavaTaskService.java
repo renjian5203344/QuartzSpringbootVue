@@ -151,33 +151,33 @@ public class JavaTaskService {
 
 
     public void createTuoPuJavaTask(JavaQuartz javaQuartz) {
-        //1.设置默认任务状态
-        javaQuartz.setJobStatus(JobStatusEnum.ENABLED.getCode());
 
-        //2.如果ParentTaskId为空，设置为-1
+        javaQuartz.setJobStatus(JobStatusEnum.ENABLED.getCode());
 
         if (StringUtils.isBlank(javaQuartz.getParentTaskId())) {
             javaQuartz.setParentTaskId("-1");
 
         }
 
-         //3.去重判断
-        JavaQuartz result =repository.findByJobNameAndJobGroup(javaQuartz.getJobName(),javaQuartz.getJobGroup());
-        if (result != null) {
+
+        JavaQuartz javaQuartz11 =repository.findByJobNameAndJobGroup(javaQuartz.getJobName(),javaQuartz.getJobGroup());
+        if (javaQuartz11 !=null) {
             System.out.println("jobName 和　jobGroup已经存在");
             return;
 
         }
 
+
       repository.save(javaQuartz);
-        String quartzEntityId = javaQuartz.getId()+"";
+        JavaQuartz javaquartz33 = repository.findByJobNameAndJobGroup(javaQuartz.getJobName(),javaQuartz.getJobGroup());
+        String quartzEntityId = javaquartz33.getId()+"";
         String parentTaskId = javaQuartz.getParentTaskId();
         if(!parentTaskId.equals("-1")){
             String[] parentids = parentTaskId.split(",");
             for(String id:parentids){
                 if(StringUtils.isNotBlank(id)){
-                    JavaQuartz javaQuartzEntity22 = repository.findById(Long.valueOf(id)).get();
-                    String preChild = javaQuartzEntity22.getChildTaskId();
+                    JavaQuartz javaQuartz22 = repository.findById(Long.valueOf(id)).get();
+                    String preChild = javaQuartz22.getChildTaskId();
                     String [] prechildString = preChild.split(",");
                     boolean isAdd = true;
                     for(String prechildid:prechildString){
@@ -189,8 +189,8 @@ public class JavaTaskService {
                     if(isAdd){
                         preChild += preChild + ","+quartzEntityId;
                     }
-                    javaQuartzEntity22.setChildTaskId(preChild);
-                    repository.save(javaQuartzEntity22);
+                    javaQuartz22.setChildTaskId(preChild);
+                    repository.save(javaQuartz22);
                 }
             }
         }

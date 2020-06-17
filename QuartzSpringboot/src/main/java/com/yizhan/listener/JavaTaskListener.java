@@ -83,8 +83,16 @@ public class JavaTaskListener implements JobListener {
         }
 
         List<JavaQuartz> childList = repository.findByIdInAndJobStatus(childIdsList,JobStatusEnum.ENABLED.getCode());
+//        List<JavaQuartz> childNewList =  new ArrayList<JavaQuartz>();
 
         if (childList != null && childList.size() > 0) {
+//
+//            for (JavaQuartz  entity: childList){
+//
+//                if (entity.getJobStatus()==JobStatusEnum.ENABLED.getCode()){
+//                    childNewList.add(entity);
+//                }
+//            }
             startChildTask(childList);
         }
 
