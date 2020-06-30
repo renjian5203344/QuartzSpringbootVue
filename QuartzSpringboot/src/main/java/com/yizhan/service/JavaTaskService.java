@@ -261,4 +261,16 @@ public class JavaTaskService {
 
     }
 
+    /**
+     * 查询单个任务列表
+     * @param
+     */
+    public List<JavaQuartz> listAllAloneTask(){
+        return repository.findByParentTaskId("-1");
+
+    }
+
+
+
+
 }

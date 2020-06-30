@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/javaTask")
@@ -20,6 +21,13 @@ public class JavaTaskController {
 
     @Autowired
     JavaTaskService javaTaskservice;
+
+    /**
+     * 创建单个任务
+     * @param javaQuartz
+     * @param bindingResult
+     * @return
+     */
 
     @PostMapping( value = "/createJob")
     public ResultVO createJob(@Valid @RequestBody JavaQuartz javaQuartz, BindingResult bindingResult){
@@ -34,9 +42,20 @@ public class JavaTaskController {
         return ResultVOUtil.success();
     }
 
+    /***
+     * 查询单个任务列表
+     * @return
+     */
+    @GetMapping( value = "/listAllAloneTask")
+    public List<JavaQuartz> listAllAloneTask(){
+
+        return javaTaskservice.listAllAloneTask();
+    }
+
+
 
     /****
-     * 创建单个任务，没有拓扑结构
+     *暂停单个任务
      * @param javaQuartz
      * @return
      */
