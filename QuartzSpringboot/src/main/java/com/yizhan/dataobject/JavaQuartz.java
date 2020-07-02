@@ -37,7 +37,7 @@ public class JavaQuartz {
     private String parameter;
 
     /**  jvm参数设置.  */
-    @NotEmpty(message = "jvm参数必填项")
+    @NotEmpty(message = "JVM参数必填项")
     @Column(name = "vmParam", nullable = false, length = 50)
     private String vmParam;
 
@@ -66,5 +66,10 @@ public class JavaQuartz {
     /**  子任务id,如果没有子任务就是为空.  */
     @Column(name = "childTaskId", nullable = false, length = 20)
     private   String  childTaskId ;
+
+    /**  任务信息.  */
+    private String taskInfo;
+
+
 
 }

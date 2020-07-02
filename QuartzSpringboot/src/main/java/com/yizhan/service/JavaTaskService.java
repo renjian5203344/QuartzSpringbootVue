@@ -1,21 +1,18 @@
 package com.yizhan.service;
-
+import org.quartz.*;
 import com.yizhan.dataobject.JavaQuartz;
 import com.yizhan.enums.JobStatusEnum;
 import com.yizhan.job.JavaTask;
 import com.yizhan.listener.JavaTaskListener;
-import com.yizhan.listener.SimpleJobListener;
 import com.yizhan.repository.JavaQuartzTaskRepository;
+import com.yizhan.util.FileReadAndWriteUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.quartz.*;
 import org.quartz.impl.matchers.KeyMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class JavaTaskService {
@@ -40,8 +37,9 @@ public class JavaTaskService {
         }
         javaQuartz.setJobStatus(JobStatusEnum.NEW.getCode());
         repository.save(javaQuartz);
-        JobDataMap newJobDataMap = getJobDataMap(javaQuartz);//构建数据对象newJobDataMap
-        //构建JobDetai
+        //service在构建map时，需要处理下
+        JobDataMap newJobDataMap = getJobDataMap(repository,javaQuartz);//构建数据对象newJobDataMap
+        //构建JobDetail
         JobDetail job =
                 JobBuilder.newJob(JavaTask.class).withIdentity(javaQuartz.getJobName(), javaQuartz.getJobGroup()).usingJobData(newJobDataMap).build();
         //构建Trigger
@@ -121,7 +119,7 @@ public class JavaTaskService {
      */
 
 
-    public static JobDataMap getJobDataMap(JavaQuartz javaQuartz) {
+    public static JobDataMap getJobDataMap(JavaQuartzTaskRepository repository,JavaQuartz javaQuartz) {
         JobDataMap jobDataMap = new JobDataMap();
         String jarPath = javaQuartz.getJarPath();//取得jarPath
         String parameter = javaQuartz.getParameter();//取得 parameter
@@ -141,6 +139,8 @@ public class JavaTaskService {
             jobDataMap.put("vmParam", vmParam);
 
         }
+        JavaQuartz result =repository.findByJobNameAndJobGroup(javaQuartz.getJobName(),javaQuartz.getJobGroup());
+        jobDataMap.put("id",result.getId() + "");//转成字符串
 
         return jobDataMap;
 //
@@ -207,7 +207,7 @@ public class JavaTaskService {
 
         if (javaQuartz != null && javaQuartz.getJobStatus()==JobStatusEnum.ENABLED.getCode()&&"-1".equals(javaQuartz.getParentTaskId())) {
 
-            JobDataMap newJobDataMap = getJobDataMap(javaQuartz);
+            JobDataMap newJobDataMap = getJobDataMap(repository,javaQuartz);
             JobDetail job =
                     JobBuilder.newJob(JavaTask.class).withIdentity(javaQuartz.getJobName(), javaQuartz.getJobGroup()).usingJobData(newJobDataMap).build();
 
@@ -271,6 +271,19 @@ public class JavaTaskService {
     }
 
 
+    /**
+     * 读取任务信息方法
+     * @param
+     */
+    public String viewInfobyId(Long id){
+        String result = "没有输出";
+        try {
+            result = FileReadAndWriteUtil.ReadFromFile(id + "");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+           return result;
+    }
 
 
 }

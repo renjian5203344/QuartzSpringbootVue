@@ -132,7 +132,7 @@ public class JavaTaskListener implements JobListener {
                 return;
 
             }
-            JobDataMap newJobDataMap = JavaTaskService.getJobDataMap(javaQuartz);//构建数据对象newJobDataMap
+            JobDataMap newJobDataMap = JavaTaskService.getJobDataMap(repository,javaQuartz);//构建数据对象newJobDataMap
             //构建JobDetail
             JobDetail job =
                     JobBuilder.newJob(JavaTask.class).withIdentity(javaQuartz.getJobName(), javaQuartz.getJobGroup()).usingJobData(newJobDataMap).build();

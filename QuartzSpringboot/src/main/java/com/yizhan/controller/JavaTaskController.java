@@ -32,11 +32,11 @@ public class JavaTaskController {
     @PostMapping( value = "/createJob")
     public ResultVO createJob(@Valid @RequestBody JavaQuartz javaQuartz, BindingResult bindingResult){
 
-     if (bindingResult.hasErrors()){
-         log.error("【创建job】参数不正确, javaQuartz={}",javaQuartz);
-         throw  new SystemException(ResultEnum.PARAM_ERROR.getCode(),
-                 bindingResult.getFieldError().getDefaultMessage());
-     }
+        if (bindingResult.hasErrors()){
+            log.error("【创建job】参数不正确, javaQuartz={}",javaQuartz);
+            throw  new SystemException(ResultEnum.PARAM_ERROR.getCode(),
+                    bindingResult.getFieldError().getDefaultMessage());
+        }
         javaTaskservice.saveJavaTask(javaQuartz);
 
         return ResultVOUtil.success();
@@ -102,6 +102,20 @@ public class JavaTaskController {
         return ResultVOUtil.success();
 
     }
+
+
+
+
+    @PostMapping( value = "/viewTaskInfo")
+    public  JavaQuartz viewTaskInfo(@RequestBody JavaQuartz javaQuartz){
+       String resultInfo = javaTaskservice.viewInfobyId(javaQuartz.getId());
+        JavaQuartz javaQuartz1 = new JavaQuartz();
+        javaQuartz1.setTaskInfo(resultInfo);
+
+        return javaQuartz1;
+
+    }
+
 
 
 }

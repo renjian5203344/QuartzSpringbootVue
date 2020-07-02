@@ -2,6 +2,7 @@ package com.yizhan.job;
 import com.yizhan.dataobject.JavaQuartz;
 import com.yizhan.enums.JobStatusEnum;
 import com.yizhan.repository.JavaQuartzTaskRepository;
+import com.yizhan.util.FileReadAndWriteUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.threads.TaskThread;
 import org.quartz.*;
@@ -32,16 +33,11 @@ public class JavaTask implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
 //JobDetail中的JobDataMap是共用的,从getMergedJobDataMap获取的JobDataMap是全新的对象
         JobDataMap map = context.getMergedJobDataMap();
-        String jarPath = map.getString("jarPath");//jar执行路径
-        String parameter = map.getString("parameter");//参数
-
-//        String param1 = parameter.split(" ")[0];
-//        String param2 = parameter.split(" ")[1];
-
-
-        String vmParam = map.getString("vmParam");//jvm参数
-
+        String jarPath = map.getString("jarPath");
+        String parameter = map.getString("parameter");
+        String vmParam = map.getString("vmParam");
         String id = map.getString("id");
+
         System.out.println("Running Job name :  " + map.getString("name"));
         System.out.println("Running Job description : " + map.getString("JobDescription"));
         System.out.println("Running Job group: {} " + map.getString("group"));
@@ -91,7 +87,8 @@ public class JavaTask implements Job {
                 System.out.println("Running Job commands : {}  " + commands.toString());
                 try {
                     Process process = processBuilder.start();// process进程对象
-                    logProcess(process.getInputStream(), process.getErrorStream());
+                    //这里会执行命令，命令会输出，输出的时候，根据id生成文件（输出内容保存到文件里面去）
+                    logProcess(process.getInputStream(), process.getErrorStream(),id);
                 } catch (IOException e) {
                     throw new JobExecutionException(e);
                 }
@@ -103,14 +100,14 @@ public class JavaTask implements Job {
 
 
     //打印Job执行内容的日志
-    private void logProcess(InputStream inputStream, InputStream errorStream) throws IOException {
+    private void logProcess(InputStream inputStream, InputStream errorStream,String id) throws IOException {
         String inputLine;
         String errorLine;
         BufferedReader inputReader = new BufferedReader(new InputStreamReader(inputStream));
         BufferedReader errorReader = new BufferedReader(new InputStreamReader(errorStream));
        while ((inputLine = inputReader.readLine()) != null) {
            try {
-               queue.put(inputLine);
+               queue.put(id+"======"+inputLine);
            } catch (InterruptedException e) {
                e.printStackTrace();
            }
@@ -118,7 +115,7 @@ public class JavaTask implements Job {
        }
         while ((errorLine = errorReader.readLine()) != null) {
             try {
-                queue.put(errorLine);
+                queue.put(id+"======"+errorLine);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -185,7 +182,13 @@ public class JavaTask implements Job {
                 try {
                     while (true) {
                     String lines = queue.take();
-                        System.out.println(" MyTaskView=="+lines);
+                    //多线程取的时候，进行分割
+                   String[] linesArray = lines.split("======");
+                   String id = linesArray[0];
+                   String contents = linesArray[1];
+                   //取到id和contents之后保存文件
+                   FileReadAndWriteUtil.writeToFile(contents,id);
+
                     }
 
                 } catch (InterruptedException e) {
