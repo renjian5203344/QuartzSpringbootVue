@@ -2,6 +2,7 @@ package com.yizhan.job;
 import com.yizhan.dataobject.JavaQuartz;
 import com.yizhan.enums.JobStatusEnum;
 import com.yizhan.repository.JavaQuartzTaskRepository;
+import com.yizhan.util.DateUtil;
 import com.yizhan.util.FileReadAndWriteUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.threads.TaskThread;
@@ -53,9 +54,13 @@ public class JavaTask implements Job {
 
 
         long startTime = System.currentTimeMillis();
+
         if (!StringUtils.isEmpty(jarPath)) {//如果jarPath不为空
+
             File jar = new File(jarPath); //实例化jar对象
+
             if (jar.exists()) {//如果路径存在
+
                 ProcessBuilder processBuilder = new ProcessBuilder();
                 processBuilder.directory(jar.getParentFile());
 
@@ -68,8 +73,8 @@ public class JavaTask implements Job {
 
                       commands.add(vmPara);
                   }
-
                 }
+
                 commands.add("-jar");
                 commands.add(jarPath);
 
@@ -107,7 +112,7 @@ public class JavaTask implements Job {
         BufferedReader errorReader = new BufferedReader(new InputStreamReader(errorStream));
        while ((inputLine = inputReader.readLine()) != null) {
            try {
-               queue.put(id+"======"+inputLine);
+               queue.put(id+"======"+inputLine+"======"+DateUtil.getCurrentString());
            } catch (InterruptedException e) {
                e.printStackTrace();
            }
@@ -115,7 +120,7 @@ public class JavaTask implements Job {
        }
         while ((errorLine = errorReader.readLine()) != null) {
             try {
-                queue.put(id+"======"+errorLine);
+                queue.put(id+"======"+errorLine+"======"+DateUtil.getCurrentString());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -186,6 +191,8 @@ public class JavaTask implements Job {
                    String[] linesArray = lines.split("======");
                    String id = linesArray[0];
                    String contents = linesArray[1];
+                   String timeString = linesArray[2];
+                   contents = timeString+"\t"+contents;
                    //取到id和contents之后保存文件
                    FileReadAndWriteUtil.writeToFile(contents,id);
 

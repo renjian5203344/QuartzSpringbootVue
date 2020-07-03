@@ -12093,3 +12093,19 @@ select javaquartz0_.id as id1_0_, javaquartz0_.child_task_id as child_ta2_0_, ja
 Cleared thread-bound request context: org.apache.catalina.connector.RequestFacade@1711412f
 Bound request context to thread: org.apache.catalina.connector.RequestFacade@1711412f
 Cleared thread-bound request context: org.apache.catalina.connector.RequestFacade@1711412f
+HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=33m16s270ms).
+HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=37m17s786ms).
+HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2h27s101ms).
+HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=3h28m25s949ms).
+Closing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@13e39c73: startup date [Thu Jul 02 13:37:42 CST 2020]; root of context hierarchy
+Stopping beans in phase 2147483647
+Scheduler schedulerFactoryBean_$_localhost1593668268565 paused.
+Unregistering JMX-exposed beans on shutdown
+Unregistering JMX-exposed beans
+Shutting down Quartz Scheduler
+Scheduler schedulerFactoryBean_$_localhost1593668268565 shutting down.
+Scheduler schedulerFactoryBean_$_localhost1593668268565 paused.
+Scheduler schedulerFactoryBean_$_localhost1593668268565 shutdown complete.
+Closing JPA EntityManagerFactory for persistence unit 'default'
+HikariPool-1 - Shutdown initiated...
+HikariPool-1 - Shutdown completed.

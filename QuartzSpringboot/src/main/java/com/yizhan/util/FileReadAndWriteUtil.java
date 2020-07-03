@@ -58,7 +58,7 @@ public class FileReadAndWriteUtil {
             String temp ="";
 
            while ((temp = bufferedReader.readLine())!=null){
-               result += temp;
+               result += temp+"<br/>";
 
            }
 
