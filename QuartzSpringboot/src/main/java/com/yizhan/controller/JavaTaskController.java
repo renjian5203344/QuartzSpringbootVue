@@ -1,4 +1,6 @@
 package com.yizhan.controller;
+import com.alibaba.fastjson.JSONObject;
+import com.yizhan.dataobject.JavaTuoPuQuartz;
 import com.yizhan.enums.ResultEnum;
 import com.yizhan.exception.SystemException;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "/javaTask")
@@ -113,6 +115,34 @@ public class JavaTaskController {
         javaQuartz1.setTaskInfo(resultInfo);
 
         return javaQuartz1;
+
+    }
+
+
+
+    @PostMapping( value = "/createTuoPuByList")
+    public void  createTuoPuByList(@RequestBody JavaTuoPuQuartz javaTuoPuQuartzParam){
+
+        String javaTuoPuQuartzJsonString = javaTuoPuQuartzParam.getJavaTuoPuQuartzJsonString();
+        JavaTuoPuQuartz javaTuoPuQuartz = JSONObject.parseObject(javaTuoPuQuartzJsonString,JavaTuoPuQuartz.class);
+        List<JavaQuartz> javaQuartzList = javaTuoPuQuartz.getJavaQuartzList();
+
+        Map<JavaQuartz, Set<JavaQuartz>> parentMap = new HashMap<JavaQuartz, Set<JavaQuartz>>();
+        for (JavaQuartz javaQuartz: javaQuartzList){
+            javaTaskservice.createTuoPuBy(parentMap,null,javaQuartz);
+        }
+
+        String rootids = "";
+        List<JavaQuartz> rootJavaQuartzList = javaTaskservice.render(parentMap);
+
+        for (JavaQuartz javaQuartz : rootJavaQuartzList){
+
+            rootids += javaQuartz.getId()+",";
+
+        }
+
+        javaTuoPuQuartz.setRootids(rootids);
+        javaTaskservice.createTuoPuTotalInfo(javaTuoPuQuartz);
 
     }
 

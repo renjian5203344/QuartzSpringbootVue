@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 @Entity
 @Data
@@ -68,7 +69,12 @@ public class JavaQuartz {
     private   String  childTaskId ;
 
     /**  任务信息.  */
+    @Transient//不需要映射成数据库
     private String taskInfo;
+
+    @Transient//不需要映射成数据库
+    /**  子节点.  */
+    private List<JavaQuartz> childList;
 
 
 
