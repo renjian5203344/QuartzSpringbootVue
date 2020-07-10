@@ -153,6 +153,14 @@ public class JavaTaskController {
 
     }
 
+    @PostMapping( value = "/findAllJavaTuoPuChildTask")
+    public List<JavaQuartz> findAllJavaTuoPuChildTask(@RequestBody JavaTuoPuQuartz javaTuoPuQuartzParam) {
+       Long id = javaTuoPuQuartzParam.getId();
+
+     return  javaTaskservice.findAllJavaTuoPuChildTask(id);
+
+    }
+
 
 
 }

@@ -451,6 +451,29 @@ public class JavaTaskService {
     }
 
 
+    /***
+     * 查询复杂拓扑任务子任务列表
+     *
+     * @return   List<JavaTuoPuQuartz>
+     */
+    public List<JavaQuartz> findAllJavaTuoPuChildTask(long id) {
+        JavaTuoPuQuartz javaTuoPuQuartz =  javaTuoPuQuartzRepository.findById(id).get();
+        String ids = javaTuoPuQuartz.getRootids();
+        String [] idsArray = ids.split(",");
+        List<Long> idsList = new ArrayList<Long>();
+        for (String idString: idsArray){
+            if (StringUtils.isBlank(idString)){
+                continue;
+            }
+            idsList.add(Long.valueOf(idString));
+
+        }
+
+       return  javaQuartzTaskRepository.findByIdIn(idsList);
+
+    }
+
+
 
 
 
