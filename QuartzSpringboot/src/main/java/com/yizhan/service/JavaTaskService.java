@@ -439,6 +439,16 @@ public class JavaTaskService {
 
     }
 
+    /***
+     * 查询拓扑任务信息列表
+     *
+     * @return   List<JavaTuoPuQuartz>
+     */
+    public List<JavaTuoPuQuartz> findAllJavaTuoPuTask() {
+
+        return javaTuoPuQuartzRepository.findAll();
+
+    }
 
 
 

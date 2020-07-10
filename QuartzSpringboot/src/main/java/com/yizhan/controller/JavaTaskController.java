@@ -146,6 +146,13 @@ public class JavaTaskController {
 
     }
 
+    @PostMapping( value = "/findAllJavaTuoPuTask")
+    public List<JavaTuoPuQuartz> findAllJavaTuoPuTask() {
+
+        return javaTaskservice.findAllJavaTuoPuTask();
+
+    }
+
 
 
 }

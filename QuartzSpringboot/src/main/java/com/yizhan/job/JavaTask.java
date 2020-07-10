@@ -137,7 +137,12 @@ public class JavaTask implements Job {
      */
     private boolean canStart(String jobName,String groupName){
         JavaQuartz javaQuartz = repository.findByJobNameAndJobGroup(jobName,groupName);//首先根据jobName和groupName查询出javaQuartz对象
-       String parentTaskId = javaQuartz.getParentTaskId();//取javaQuartz对象的ParentTaskId
+
+        if (javaQuartz == null){
+            return  false;
+       }
+
+        String parentTaskId = javaQuartz.getParentTaskId();//取javaQuartz对象的ParentTaskId
        if ("-1".equals(parentTaskId)){//如果parentTaskId等于-1
            if (javaQuartz.getJobStatus()!=JobStatusEnum.FINISH.getCode()){
                return  true; //返回true,让它跑
